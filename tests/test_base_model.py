@@ -1,6 +1,7 @@
 #!usr/bin/python3
 """
 A class to define unitest
+testing all baseclass methods
 """
 
 
