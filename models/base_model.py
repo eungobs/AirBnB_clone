@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""Defines class"""
 import uuid
 import datetime
 
