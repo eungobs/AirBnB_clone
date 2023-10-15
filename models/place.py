@@ -18,7 +18,6 @@ class Place(BaseModel):
         max_guest (int): The maximum number of guests of the place.
         Others
     """
-
     city_id = ""
     user_id = ""
     name = ""
