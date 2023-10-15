@@ -10,14 +10,15 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 
-class FileStorage():
+class FileStorage:
     def __init__(self, file_path):
-        self.__file_path = "file_path"  # Path to the JSON file
+        self.__file_path = file_path  # Path to the JSON file
         self.__objects = {}  # Dictionary to store objects
-        
+
     def all(self):
         """Returns the dictionary __objects."""
-        return FileStorage.__objects
+        return self.__objects
+
     def new(self, obj):
         """Sets in __objects the obj with key <class name>.id."""
         key = f"{obj.__class__.__name__}.{obj.id}"
@@ -28,9 +29,9 @@ class FileStorage():
         serialized_objs = {}
         for key, value in self.__objects.items():
             serialized_objs[key] = value.to_dict()
-        
+
         with open(self.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(serialized_objs, file)
+            json.dump(serialized_objs, file, indent=4)
 
     def reload(self):
         """Deserializes the JSON file to __objects (only if the file exists)."""
@@ -40,8 +41,7 @@ class FileStorage():
                 for key, value in data.items():
                     class_name, obj_id = key.split('.')
                     module_name = "models." + class_name
-                    cls = globals()[class_name]
+                    cls = eval(module_name + "." + class_name)
                     self.__objects[key] = cls(**value)
         except FileNotFoundError:
-            pass
-                
+            pass                
