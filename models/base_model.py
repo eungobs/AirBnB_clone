@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-"""Defines class"""
 import uuid
 import datetime
-
+from models import storage
+"""my basemodel"""
 class BaseModel:
     def __init__(self, *args, **kwargs):
         if kwargs:
@@ -27,9 +27,12 @@ class BaseModel:
         return data
 
     def save(self):
-        self.update_timestamp()
+        """Call the save method of storage."""
+        storage.new(self)
+        storage.save()
 
     def __str__(self):
-        """Return the print/str representation of the BaseModel instance."""
         gname = self.__class__.__name__
+        if hasattr(self, 'name') and hasattr(self, 'my_number'):
+            return "[{}] ({}) {}".format(gname, self.id, self.__dict__)
         return "[{}] ({}) {}".format(gname, self.id, self.__dict__)
