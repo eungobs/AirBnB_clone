@@ -1,8 +1,7 @@
 #!/usr/bin/python3
-"""Defines class"""
 import uuid
 import datetime
-
+"""my basemodel"""
 class BaseModel:
     def __init__(self, *args, **kwargs):
         if kwargs:
@@ -30,7 +29,7 @@ class BaseModel:
         self.update_timestamp()
 
     def __str__(self):
-        """Return the print/str representation of the BaseModel instance."""
         gname = self.__class__.__name__
+        if hasattr(self, 'name') and hasattr(self, 'my_number'):
+            return "[{}] ({}) {}".format(gname, self.id, self.__dict__)
         return "[{}] ({}) {}".format(gname, self.id, self.__dict__)
-~
