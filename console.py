@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-"""Defines the HBnB console containing the entry point."""
+"""Defines the HBnB console."""
 import cmd
 import re
 from shlex import split
+from models import storage
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -10,6 +11,7 @@ from models.city import City
 from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
+
 
 def parse(arg):
     curly_braces = re.search(r"\{(.*?)\}", arg)
@@ -23,11 +25,10 @@ def parse(arg):
             retl.append(brackets.group())
             return retl
     else:
-        lexer = split(arg[:brackets.span()[0]])
+        lexer = split(arg[:curly_braces.span()[0]])
         retl = [i.strip(",") for i in lexer]
         retl.append(curly_braces.group())
         return retl
-
 
 
 class HBNBCommand(cmd.Cmd):
@@ -163,19 +164,6 @@ class HBNBCommand(cmd.Cmd):
         a given attribute key/value pair or dictionary."""
         argl = parse(arg)
         objdict = storage.all()
-
-    def do_exit(self, arg):
-        """Exit the console"""
-        return True
-
-    def do_quit(self, arg):
-        """Quit the console"""
-        return True
-
-    def do_EOF(self, arg):
-        """Handle EOF (Ctrl+D)"""
-        print("")
-        return True
 
         if len(argl) == 0:
             print("** class name missing **")
