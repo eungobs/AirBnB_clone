@@ -25,23 +25,24 @@ class FileStorage:
         self.__objects[key] = obj
 
     def save(self):
-        """Serializes __objects to the JSON file (path: __file_path)."""
-        serialized_objs = {}
-        for key, value in self.__objects.items():
-            serialized_objs[key] = value.to_dict()
-
-        with open(self.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(serialized_objs, file, indent=4)
+        odict = FileStorage.__objects
+        objdict = {obj: odict[obj].to_dict() for obj in odict.keys()}
+        with open(FileStorage.__file_path, "w") as f:
+            json.dump(objdict, f, default=lambda x: x.__dict__)
 
     def reload(self):
-        """Deserializes the JSON file to __objects (only if the file exists)."""
-        try:
-            with open(self.__file_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                for key, value in data.items():
-                    class_name, obj_id = key.split('.')
-                    module_name = "models." + class_name
-                    cls = eval(module_name + "." + class_name)
-                    self.__objects[key] = cls(**value)
-        except FileNotFoundError:
-            pass                
+    try:
+        with open(FileStorage.__file_path) as f:
+            objdict = json.load(f)
+            for obj_key, obj_data in objdict.items():
+                cls_name = obj_data["__class__"]
+                if cls_name in globals():
+                    obj = globals()[cls_name](**obj_data)
+                    self.new(obj)
+                else:
+                    # Handle cases where the class is not defined
+                    print(f"Unknown class '{cls_name}' encountered in JSON file.")
+    except FileNotFoundError:
+        # Create an empty storage if the file doesn't exist
+        self.__objects = {}
+
