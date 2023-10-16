@@ -10,39 +10,37 @@ from models.place import Place
 from models.amenity import Amenity
 from models.review import Review
 
+import json
+
 class FileStorage:
-    def __init__(self, file_path):
-        self.__file_path = file_path  # Path to the JSON file
-        self.__objects = {}  # Dictionary to store objects
+    __file_path = "file.json"
+    __objects = {}
 
     def all(self):
-        """Returns the dictionary __objects."""
+        """Return the dictionary __objects."""
         return self.__objects
 
     def new(self, obj):
-        """Sets in __objects the obj with key <class name>.id."""
-        key = f"{obj.__class__.__name__}.{obj.id}"
+        """Set in __objects the obj with key <obj class name>.id."""
+        key = "{}.{}".format(obj.__class__.____name__, obj.id)
         self.__objects[key] = obj
 
     def save(self):
-        odict = FileStorage.__objects
-        objdict = {obj: odict[obj].to_dict() for obj in odict.keys()}
-        with open(FileStorage.__file_path, "w") as f:
-            json.dump(objdict, f, default=lambda x: x.__dict__)
+        """Serialize __objects to the JSON file (__file_path)."""
+        obj_dict = {key: obj.to_dict() for key, obj in self.__objects.items()}
+        with open(self.__file_path, 'w', encoding="utf-8") as file:
+            json.dump(obj_dict, file)
 
     def reload(self):
-    try:
-        with open(FileStorage.__file_path) as f:
-            objdict = json.load(f)
-            for obj_key, obj_data in objdict.items():
-                cls_name = obj_data["__class__"]
-                if cls_name in globals():
-                    obj = globals()[cls_name](**obj_data)
-                    self.new(obj)
-                else:
-                    # Handle cases where the class is not defined
-                    print(f"Unknown class '{cls_name}' encountered in JSON file.")
-    except FileNotFoundError:
-        # Create an empty storage if the file doesn't exist
-        self.__objects = {}
+        """Deserialize the JSON file to __objects if the file exists."""
+        try:
+            with open(self.__file_path, 'r', encoding="utf-8") as file:
+                obj_dict = json.load(file)
+                for key, obj_data in obj_dict.items():
+                    class_name, obj_id = key.split(".")
+                    class_ = globals()[class_name]
+                    obj = class_(**obj_data)
+                    self.__objects[key] = obj
+        except FileNotFoundError:
+            pass
 
