@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import uuid
 import datetime
+from models import storage
 """my basemodel"""
 class BaseModel:
     def __init__(self, *args, **kwargs):
@@ -26,7 +27,9 @@ class BaseModel:
         return data
 
     def save(self):
-        self.update_timestamp()
+        """Call the save method of storage."""
+        storage.new(self)
+        storage.save()
 
     def __str__(self):
         gname = self.__class__.__name__
