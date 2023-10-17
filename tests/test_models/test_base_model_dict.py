@@ -1,24 +1,30 @@
-#!/usr/bin/python3
+#!usr/bin/python3
+"""
+Defines unittest for class TestBaseModelRecreation
+"""
+
+import unittest
 from models.base_model import BaseModel
 
-my_model = BaseModel()
-my_model.name = "My_First_Model"
-my_model.my_number = 89
-print(my_model.id)
-print(my_model)
-print(type(my_model.created_at))
-print("--")
-my_model_json = my_model.to_dict()
-print(my_model_json)
-print("JSON of my_model:")
-for key in my_model_json.keys():
-    print("\t{}: ({}) - {}".format(key, type(my_model_json[key]), my_model_json[key]))
+class TestBaseModelRecreation(unittest.TestCase):
 
-print("--")
-my_new_model = BaseModel(**my_model_json)
-print(my_new_model.id)
-print(my_new_model)
-print(type(my_new_model.created_at))
+    def test_recreate_instance_from_dict(self):
+        
+        data = {
+            '__class__': 'BaseModel',
+            'id': '12345',
+            'created_at': '2023-01-01T00:00:00.000000',
+            'name': 'Test Model'
+        }
 
-print("--")
-print(my_model is my_new_model)
+
+        new_instance = BaseModel(**data)
+
+        self.assertEqual(new_instance.__class__.__name__, 'BaseModel')
+        self.assertEqual(new_instance.id, '12345')
+        self.assertEqual(new_instance.name, 'Test Model')
+
+        self.assertIsInstance(new_instance.created_at, datetime)
+
+if __name__ == '__main__':
+    unittest.main()
